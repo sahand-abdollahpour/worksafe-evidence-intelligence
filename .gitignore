@@ -220,3 +220,6 @@ __marimo__/
 .streamlit/secrets.toml
 data/raw/
 data/interim/
+# WorkSafe Evidence Intelligence - local datasets
+data/processed/
+data/external/
