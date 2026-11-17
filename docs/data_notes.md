@@ -12,8 +12,8 @@ Working notes on the raw data snapshot used in this project. Each entry records 
 | Contents | one CSV, `January2015toNovember2025.csv` (57,403,269 bytes) |
 | Rows x columns | 105,996 x 28 |
 | Event date range | 2015-01-01 to 2025-11-30 |
-| Downloaded on | `TODO: YYYY-MM-DD` |
-| SHA-256 of the ZIP | `TODO: output of Get-FileHash -Algorithm SHA256` |
+| Downloaded on | `2026-11-13` |
+| SHA-256 of the ZIP | `A3F7F434E200FB956131F12277378E592993A25DB3F328716FBECE106F846BB0` |
 
 The raw files are kept locally in `data/raw/` and are not committed to Git.
 
