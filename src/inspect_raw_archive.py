@@ -139,3 +139,75 @@ reports_2025 = jan_nov_reports_per_year.loc[2025]
 change_2025_vs_2024_pct = (reports_2025 - reports_2024) / reports_2024 * 100
 print(
     f'Change in Jan-Nov Reports 2025 vs 2024: {change_2025_vs_2024_pct:.1f}%')
+
+# --------------------------------------------------
+# 12. Numeric columns inspection
+# --------------------------------------------------
+
+numeric_columns = df.select_dtypes(include='number').columns
+print(f'Numeric Columns: {numeric_columns.tolist()}')
+print(f'Numeric Columns Data Types:\n{df[numeric_columns].dtypes}')
+
+worker_count_columns = ['Hospitalized', 'Amputation', 'Loss of Eye']
+for column in worker_count_columns:
+    print(f'\nColumn: {column}')
+    print(df[column].value_counts(dropna=False).sort_index())
+
+coded_columns = ['Nature', 'Part of Body',
+                 'Event', 'Source', 'Secondary Source']
+for column in coded_columns:
+    print(f'\nColumn: {column}')
+    print(f'Unique Codes: {df[column].nunique()}')
+    print(f'Missing Values: {df[column].isna().sum()}')
+
+
+code_title_pairs = [
+    ('Nature', 'NatureTitle'),
+    ('Part of Body', 'Part of Body Title'),
+    ('Event', 'EventTitle'),
+    ('Source', 'SourceTitle'),
+    ('Secondary Source', 'Secondary Source Title'),
+]
+
+for code_column, title_column in code_title_pairs:
+
+    code_missing = df[code_column].isna()
+    title_missing = df[title_column].isna()
+
+    pair_mismatch_mask = code_missing != title_missing
+
+    print(f'\nCode Column: {code_column}')
+    print(f'Title Column: {title_column}')
+    print(f'Code Missing: {code_missing.sum()}')
+    print(f'Title Missing: {title_missing.sum()}')
+    print(f'Mismatched Rows: {pair_mismatch_mask.sum()}')
+
+for code_column, title_column in code_title_pairs:
+
+    code_missing = df[code_column].isna()
+    title_missing = df[title_column].isna()
+    pair_mismatch_mask = code_missing != title_missing
+    if pair_mismatch_mask.any():
+        print(f'\n--- {code_column} / {title_column} ---')
+        print(df.loc[pair_mismatch_mask, ['ID', 'UPA', 'EventDate',
+              code_column, title_column]].to_string(index=False))
+
+
+coordinate_columns = ['Latitude', 'Longitude']
+for column in coordinate_columns:
+    print(f'\nColumn: {column}')
+    print(f'Missing Values: {df[column].isna().sum()}')
+    print(f'Unique Values: {df[column].nunique()}')
+    print(f'Minimum: {df[column].min()}')
+    print(f'Maximum: {df[column].max()}')
+
+latitude_missing = df['Latitude'].isna()
+longitude_missing = df['Longitude'].isna()
+
+print('Latitude Missing / Longitude Present:',
+      (latitude_missing & ~longitude_missing).sum())
+
+print('Latitude Present / Longitude Missing:',
+      (~latitude_missing & longitude_missing).sum())
+
+print('Both Coordinates Missing:', (latitude_missing & longitude_missing).sum())
