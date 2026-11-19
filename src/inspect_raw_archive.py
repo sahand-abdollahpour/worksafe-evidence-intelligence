@@ -144,21 +144,21 @@ print(
 # 12. Numeric columns inspection
 # --------------------------------------------------
 
-numeric_columns = df.select_dtypes(include='number').columns
+numeric_columns = clean_df.select_dtypes(include='number').columns
 print(f'Numeric Columns: {numeric_columns.tolist()}')
-print(f'Numeric Columns Data Types:\n{df[numeric_columns].dtypes}')
+print(f'Numeric Columns Data Types:\n{clean_df[numeric_columns].dtypes}')
 
 worker_count_columns = ['Hospitalized', 'Amputation', 'Loss of Eye']
 for column in worker_count_columns:
     print(f'\nColumn: {column}')
-    print(df[column].value_counts(dropna=False).sort_index())
+    print(clean_df[column].value_counts(dropna=False).sort_index())
 
 coded_columns = ['Nature', 'Part of Body',
                  'Event', 'Source', 'Secondary Source']
 for column in coded_columns:
     print(f'\nColumn: {column}')
-    print(f'Unique Codes: {df[column].nunique()}')
-    print(f'Missing Values: {df[column].isna().sum()}')
+    print(f'Unique Codes: {clean_df[column].nunique()}')
+    print(f'Missing Values: {clean_df[column].isna().sum()}')
 
 
 code_title_pairs = [
@@ -171,8 +171,8 @@ code_title_pairs = [
 
 for code_column, title_column in code_title_pairs:
 
-    code_missing = df[code_column].isna()
-    title_missing = df[title_column].isna()
+    code_missing = clean_df[code_column].isna()
+    title_missing = clean_df[title_column].isna()
 
     pair_mismatch_mask = code_missing != title_missing
 
@@ -184,25 +184,25 @@ for code_column, title_column in code_title_pairs:
 
 for code_column, title_column in code_title_pairs:
 
-    code_missing = df[code_column].isna()
-    title_missing = df[title_column].isna()
+    code_missing = clean_df[code_column].isna()
+    title_missing = clean_df[title_column].isna()
     pair_mismatch_mask = code_missing != title_missing
     if pair_mismatch_mask.any():
         print(f'\n--- {code_column} / {title_column} ---')
-        print(df.loc[pair_mismatch_mask, ['ID', 'UPA', 'EventDate',
+        print(clean_df.loc[pair_mismatch_mask, ['ID', 'UPA', 'EventDate',
               code_column, title_column]].to_string(index=False))
 
 
 coordinate_columns = ['Latitude', 'Longitude']
 for column in coordinate_columns:
     print(f'\nColumn: {column}')
-    print(f'Missing Values: {df[column].isna().sum()}')
-    print(f'Unique Values: {df[column].nunique()}')
-    print(f'Minimum: {df[column].min()}')
-    print(f'Maximum: {df[column].max()}')
+    print(f'Missing Values: {clean_df[column].isna().sum()}')
+    print(f'Unique Values: {clean_df[column].nunique()}')
+    print(f'Minimum: {clean_df[column].min()}')
+    print(f'Maximum: {clean_df[column].max()}')
 
-latitude_missing = df['Latitude'].isna()
-longitude_missing = df['Longitude'].isna()
+latitude_missing = clean_df['Latitude'].isna()
+longitude_missing = clean_df['Longitude'].isna()
 
 print('Latitude Missing / Longitude Present:',
       (latitude_missing & ~longitude_missing).sum())
