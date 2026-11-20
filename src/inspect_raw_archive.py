@@ -3,7 +3,6 @@ from zipfile import ZipFile
 
 import pandas as pd
 
-
 script_path = Path(__file__).resolve().parent
 print(script_path)
 project_root = script_path.parent
@@ -141,7 +140,34 @@ print(
     f'Change in Jan-Nov Reports 2025 vs 2024: {change_2025_vs_2024_pct:.1f}%')
 
 # --------------------------------------------------
-# 12. Numeric columns inspection
+# 12. Save Working Dataset
+# --------------------------------------------------
+
+interim_dir = project_root / 'data' / 'interim'
+interim_dir.mkdir(parents=True, exist_ok=True)
+working_data_path = interim_dir / 'osha_sir_working.parquet'
+print(f'Working DataSet Path: {working_data_path}')
+clean_df.to_parquet(working_data_path, index=False, engine='pyarrow')
+verification_df = pd.read_parquet(working_data_path, engine='pyarrow')
+print(f'Shape: {verification_df.shape}')
+print(f'Dtypes: {verification_df.dtypes}')
+
+# --------------------------------------------------
+# ZIP Code Preservation Verification
+# --------------------------------------------------
+
+leading_zero_mask = verification_df['Zip'].str.startswith('0', na=False)
+
+print('\n--- ZIP Codes Starting with Zero ---')
+print(f'Total Rows: {leading_zero_mask.sum()}')
+print(verification_df.loc[leading_zero_mask, [
+      'ID', 'City', 'State', 'Zip']].head(10).to_string(index=False))
+zip_values_match = clean_df['Zip'].equals(verification_df['Zip'])
+print(f'\nZIP Values Preserved: {zip_values_match}')
+
+
+# --------------------------------------------------
+# 13. Numeric columns inspection
 # --------------------------------------------------
 
 numeric_columns = clean_df.select_dtypes(include='number').columns
@@ -211,3 +237,13 @@ print('Latitude Present / Longitude Missing:',
       (~latitude_missing & longitude_missing).sum())
 
 print('Both Coordinates Missing:', (latitude_missing & longitude_missing).sum())
+
+nature_counts = clean_df['NatureTitle'].value_counts(dropna=False).head(15)
+print(f'\nNature Count: {nature_counts}')
+
+body_part_counts = clean_df['Part of Body Title'].value_counts(
+    dropna=False).head(15)
+print(f'\nPart of Body Count: {body_part_counts}')
+
+event_counts = clean_df['EventTitle'].value_counts(dropna=False).head(15)
+print(f'\nEvent Count: {event_counts}')
